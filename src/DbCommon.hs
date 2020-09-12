@@ -82,6 +82,12 @@ instance Entity Item ItemId Text where
   eid = itemId
   table _ = "items"
 
+  selectAllQuery i = "select * from items"
+  selectByIdQuery i = "select * from items where id = ?"
+  insertQuery _ = "insert into items values (?, ?)"
+  updateQuery _ = "update items set name = ? where id = ?"
+  
+
 itemId_ :: Item -> ItemId
 itemId_ i = itemId i
 
