@@ -14,12 +14,20 @@ import Database.PostgreSQL.Simple.FromField (FromField, fromField)
 
 import qualified Data.List as List
 
+class Insertable a where
+  toInsertRow_ :: a -> [Action]
+
+class Updateable a where
+  toUpdateRow_ :: a -> [Action]
+
 class Id a b | a -> b where
   id_ :: a -> b
 
 class (ToRow a, FromRow a, ToField b, ToRow b, Id b c) => Entity a b c | a -> b where
   eid :: a -> b
-  table :: a -> Text
+
+  toIdRow :: a -> [Action]
+  toBaseRow :: a -> [Action]
 
   selectAllQuery :: a -> Query
 
@@ -36,12 +44,18 @@ class (ToRow a, FromRow a, ToField b, ToRow b, Id b c) => Entity a b c | a -> b 
       then return Nothing
       else return $ Just $ xs !! 0
 
+  toInsertRow :: a -> [Action]
+  toInsertRow e = toIdRow e <> toBaseRow e
+
   insertQuery :: a -> Query
 
   insert :: a -> Connection -> IO ()
   insert e conn = do
     _ <- execute conn (insertQuery e) e
     return $ ()
+
+  toUpdateRow :: a -> [Action]
+  toUpdateRow e = toBaseRow e <> toIdRow e
 
   updateQuery :: a -> Query
 
@@ -50,6 +64,17 @@ class (ToRow a, FromRow a, ToField b, ToRow b, Id b c) => Entity a b c | a -> b 
     _ <- execute conn (updateQuery e) e
     return $ ()
 
+findById_ :: (ToRow id, FromRow entity) => Connection -> Query -> id -> IO (Maybe entity)
+findById_ conn queryStr id = do
+  xs <- query conn queryStr id
+  return $ if List.length xs == 0
+    then Nothing
+    else Just $ xs !! 0
+
+update_ :: (Updateable item) => Connection -> Query -> item -> IO ()
+update_ conn queryStr item = do
+  _ <- execute conn queryStr $ toUpdateRow_ item
+  return $ ()
 
   -- findByIdSql :: a -> Text
   -- findByIdSql e = findAllSql e <> " where id = ?"
@@ -80,13 +105,20 @@ data Item = Item
 
 instance Entity Item ItemId Text where
   eid = itemId
-  table _ = "items"
+
+  toIdRow i = [toField $ itemId i]
+  toBaseRow i = [toField $ itemName i]
 
   selectAllQuery i = "select * from items"
   selectByIdQuery i = "select * from items where id = ?"
   insertQuery _ = "insert into items values (?, ?)"
   updateQuery _ = "update items set name = ? where id = ?"
-  
+
+instance Insertable Item where
+  toInsertRow_ i = [toField $ itemId i] <> [toField $ itemName i]
+
+instance Updateable Item where
+  toUpdateRow_ i = [toField $ itemName i] <> [toField $ itemId i]
 
 itemId_ :: Item -> ItemId
 itemId_ i = itemId i
@@ -94,23 +126,15 @@ itemId_ i = itemId i
 
 item = Item { itemId = ItemId "", itemName = "" }
 
+createDbQuery :: Query
+createDbQuery = "\
+\create database itemsdb \
+\"
 
--- data ItemEntity = EData Item ItemId {
-
--- }
-
--- itemEntity :: Item -> EData Item ItemId
--- itemEntity item = EData {
---   Eeid = itemId item,
---   table_ = "items",
---   insertFields_  = "",
---   updateFields_ = ""
--- }
-
--- findAllItems = findAllSql itemEntity
-
--- instance Entity a where
---   eid = itemId
---   table _ = "items"
---   insertFieldQs _ = "(?, ?)"
---   updateFieldQs _ = "id = ? , name = ?"FromField ItemId => 
+createQuery :: Query
+createQuery = "\
+\create table if not exists Items ( \
+\  id varchar(255) not null primary key, \
+\  name varchar(255) not null \
+\)\ 
+\"
