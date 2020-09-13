@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0f4552441cdc808d6b792e5c7cb9e7c7839a13800ec639d792aba1fd5d50bc9e
+-- hash: f3a748365be4582afd8c9c9dd57bcf0b174ad77fa761532165c11f4a4402dcec
 
 name:           avtor-scotty
 version:        0.1.0.0
@@ -29,6 +29,7 @@ library
   exposed-modules:
       DbCommon
       Lib
+      Repo.UserRepo
   other-modules:
       Paths_avtor_scotty
   hs-source-dirs:
@@ -38,6 +39,7 @@ library
     , base >=4.7 && <5
     , postgresql-simple
     , text
+    , uuid
   default-language: Haskell2010
 
 executable avtor-scotty-exe
@@ -53,6 +55,7 @@ executable avtor-scotty-exe
     , base >=4.7 && <5
     , postgresql-simple
     , text
+    , uuid
   default-language: Haskell2010
 
 test-suite avtor-scotty-test
@@ -69,4 +72,5 @@ test-suite avtor-scotty-test
     , base >=4.7 && <5
     , postgresql-simple
     , text
+    , uuid
   default-language: Haskell2010

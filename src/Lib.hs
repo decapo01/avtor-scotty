@@ -5,7 +5,7 @@ module Lib
 
 import Data.Text
 import Avtor (SignInDto(..))
-import DbCommon (toUpdateRow, update_, findById_, findById, createDbQuery, createQuery, insert, Item(..), ItemId(..), Entity)
+import DbCommon (findAll, update, findById, createDbQuery, createQuery, insert, Item(..), ItemId(..), Entity)
 import Database.PostgreSQL.Simple (execute_, connect, defaultConnectInfo, connectHost, connectDatabase, connectUser, connectPassword)
 import Control.Monad (forM, forM_)
 import Control.Monad.IO.Class (MonadIO(liftIO))
@@ -43,8 +43,10 @@ someFunc = do
   itemsConn <- itemsConnection
   -- execute_ itemsConn createQuery
   -- forM_ items $ \i -> insert i itemsConn
-  update_ itemsConn "update items set name = ? where id = ?" $ toUpdateRow (Item (ItemId "1") "Updated Item")
-  maybeItem <- findById_ itemsConn "select * from items where id = ?" (ItemId "1")
-  case maybeItem of
-    Just i -> putStrLn $ unpack $ itemName i
-    Nothing -> putStrLn "no item foumnd"
+  -- update_ itemsConn "update items set name = ? where id = ?" $ Item (ItemId "1") "Updated Item"
+  -- maybeItem <- findById_ itemsConn "select * from items where id = ?" $ ItemId "1"
+  -- case maybeItem of
+  --   Just i -> putStrLn $ unpack $ itemName i
+  --   Nothing -> putStrLn "no item foumnd"
+  items_ <- findAll itemsConn "select * from items"
+  forM_ items_ $ \i -> putStrLn $ unpack $ itemName i

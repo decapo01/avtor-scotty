@@ -24,6 +24,7 @@ dependencies:
 - text
 - avtor-core-hs
 - postgresql-simple
+- uuid
 
 library:
   source-dirs: src
