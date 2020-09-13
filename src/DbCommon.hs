@@ -53,6 +53,11 @@ update conn queryStr item = do
   _ <- execute conn queryStr $ toUpdateRow_ item
   return ()
 
+delete :: (ToRow id) => Connection -> Query -> id -> IO ()
+delete conn queryStr id = do
+  _ <- execute conn queryStr id
+  return ()
+
   -- findByIdSql :: a -> Text
   -- findByIdSql e = findAllSql e <> " where id = ?"
 
@@ -94,7 +99,10 @@ instance Updateable Item where
 itemFindById conn id = findById conn "select * from items where id = ?" id
 itemFindAll conn = findAll conn "select * from items"
 itemInsert conn item = insert conn "insert into items (?, ?)" item
+itemUpdate :: Updateable item => Connection -> item -> IO ()
 itemUpdate conn item = update conn "update items set name = ? where id = ?" item
+
+
 
 createDbQuery :: Query
 createDbQuery = "\

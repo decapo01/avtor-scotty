@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f3a748365be4582afd8c9c9dd57bcf0b174ad77fa761532165c11f4a4402dcec
+-- hash: e6be2747d7872d1b93475ec3299d26110c3150d897b57b368080048cb04d7e5e
 
 name:           avtor-scotty
 version:        0.1.0.0
@@ -29,6 +29,7 @@ library
   exposed-modules:
       DbCommon
       Lib
+      Repo.AccountRepo
       Repo.UserRepo
   other-modules:
       Paths_avtor_scotty
