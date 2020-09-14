@@ -13,6 +13,8 @@ import Database.PostgreSQL.Simple.FromField (FromField, fromField)
 import Data.UUID (toASCIIBytes)
 import Database.PostgreSQL.Simple.Internal (Connection)
 
+import qualified Data.String as String
+
 
 instance ToRow Account where
   toRow a = [toField $ accountId a] <> [toField $ accountName a]
@@ -37,13 +39,15 @@ instance FromField AccountId where
 instance Insertable Account where
   toInsertRow_ a = toRow a
 
+accountTable = Table "accounts"
+
 findById :: Connection -> AccountId -> IO (Maybe Account)
 findById conn accountId =
-  GenericRepo.findById conn "select * from accounts where id = ?" accountId
+  GenericRepo.findById conn accountTable accountId
 
 findAll :: Connection -> IO [Account]
 findAll conn =
-  GenericRepo.findAll conn "select * from accounts"
+  GenericRepo.findAll conn accountTable
 
 insert :: Connection -> Account -> IO ()
 insert conn account =
@@ -55,4 +59,6 @@ update conn account =
 
 delete :: Connection -> AccountId -> IO ()
 delete conn accountId =
-  GenericRepo.delete conn "delete from accounts where id = ?" accountId
+  GenericRepo.delete conn queryStr accountId
+  where
+    queryStr = String.fromString $ "delete from accounts where " ++ "id = ?"

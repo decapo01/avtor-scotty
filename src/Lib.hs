@@ -5,7 +5,7 @@ module Lib
 
 import Data.Text
 import Avtor (SignInDto(..))
-import DbCommon (findAll, update, findById, createDbQuery, createQuery, insert, Item(..), ItemId(..), Entity)
+import DbCommon (findAll, update, findById, createDbQuery, createQuery, insert, Item(..), ItemId(..), Entity, itemTable)
 import Database.PostgreSQL.Simple (execute_, connect, defaultConnectInfo, connectHost, connectDatabase, connectUser, connectPassword)
 import Control.Monad (forM, forM_)
 import Control.Monad.IO.Class (MonadIO(liftIO))
@@ -48,5 +48,5 @@ someFunc = do
   -- case maybeItem of
   --   Just i -> putStrLn $ unpack $ itemName i
   --   Nothing -> putStrLn "no item foumnd"
-  items_ <- findAll itemsConn "select * from items"
+  items_ <- findAll itemsConn itemTable
   forM_ items_ $ \i -> putStrLn $ unpack $ itemName i

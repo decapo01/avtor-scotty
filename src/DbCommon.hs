@@ -13,6 +13,7 @@ import Data.Text.Encoding (encodeUtf8)
 import Database.PostgreSQL.Simple.FromField (FromField, fromField)
 
 import qualified Data.List as List
+import qualified Data.String as String
 
 class Insertable a where
   toInsertRow_ :: a -> [Action]
@@ -32,13 +33,24 @@ class (ToRow a, FromRow a, Insertable a, Updateable a, ToField b, ToRow b, Id b 
   toInsertRow :: a -> [Action]
   toInsertRow e = toIdRow e <> toBaseRow e
 
-findAll :: (FromRow entity) => Connection -> Query -> IO [entity]
-findAll conn queryStr =
-  query_ conn queryStr
+newtype Table 
+  = Table
+  { tableValue :: String
+  }
 
-findById :: (ToRow id, FromRow entity) => Connection -> Query -> id -> IO (Maybe entity)
-findById conn queryStr id = do
-  xs <- query conn queryStr id
+findAllQuery :: Table -> String
+findAllQuery table = String.fromString $ "select * from " ++ tableValue table
+
+findByIdQuery :: Table -> String
+findByIdQuery table = String.fromString $ findAllQuery table ++ " where id = ?"
+
+findAll :: (FromRow entity) => Connection -> Table -> IO [entity]
+findAll conn table =
+  query_ conn $ String.fromString $ findAllQuery table
+
+findById :: (ToRow id, FromRow entity) => Connection -> Table -> id -> IO (Maybe entity)
+findById conn table id = do
+  xs <- query conn (String.fromString $ findByIdQuery table) id
   return $ if List.length xs == 0
     then Nothing
     else Just $ xs !! 0
@@ -96,8 +108,10 @@ instance Insertable Item where
 instance Updateable Item where
   toUpdateRow_ i = [toField $ itemName i] <> [toField $ itemId i]
 
-itemFindById conn id = findById conn "select * from items where id = ?" id
-itemFindAll conn = findAll conn "select * from items"
+itemTable = Table "items"
+
+itemFindById conn id = findById conn itemTable id
+itemFindAll conn = findAll conn itemTable
 itemInsert conn item = insert conn "insert into items (?, ?)" item
 itemUpdate :: Updateable item => Connection -> item -> IO ()
 itemUpdate conn item = update conn "update items set name = ? where id = ?" item

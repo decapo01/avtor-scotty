@@ -43,13 +43,15 @@ instance Updateable User where
     , toField $ userAccountId $ u
     ]
 
+userTable = Table "users"
+
 findById :: Connection -> UserId -> IO (Maybe User)
 findById conn userId = 
-  GenericRepo.findById conn "select * from users where id = ?" userId
+  GenericRepo.findById conn userTable userId
 
 findAll :: Connection -> IO [User]
 findAll conn =
-  GenericRepo.findAll conn "select * from users"
+  GenericRepo.findAll conn userTable
 
 insert :: Connection -> User -> IO ()
 insert conn user =
@@ -62,6 +64,3 @@ update conn user =
 delete :: Connection -> UserId -> IO ()
 delete conn userId =
   GenericRepo.delete conn "delete from users where id = ?" userId
-
--- idToRow :: User -> [Action]
--- idToRow u = [toField $ userId u]
