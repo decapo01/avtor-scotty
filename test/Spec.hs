@@ -1,2 +1,7 @@
+
+import Test.Hspec
+import qualified Unit.One as ONE
+
 main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+main = do
+  ONE.test

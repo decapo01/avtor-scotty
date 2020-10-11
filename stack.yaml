@@ -42,6 +42,8 @@ packages:
 extra-deps:
 - git: https://github.com/decapo01/avtor-core-hs.git
   commit: 9875f4b15a4a672ccbdfebf68f0b98605a6728f1
+- digestive-functors-0.8.4.2@sha256:badff1797b6dcd860a48ed4558985b2f6bec501e1016fa5afd9d7d6b0d8e4c08,3364
+- digestive-functors-scotty-0.2.0.2@sha256:5d7d94c850207910683a4ac60426bf3fb0d62ba2d15cd0bfb758cbee51417580,1171
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

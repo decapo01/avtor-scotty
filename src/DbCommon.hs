@@ -55,6 +55,13 @@ findById conn table id = do
     then Nothing
     else Just $ xs !! 0
 
+insert_ :: (Insertable item) => Connection -> Table -> String -> String -> item -> IO ()
+insert_ conn table columns paramString item = do
+  _ <- execute conn qString $ toInsertRow_ item
+  return ()
+  where
+    qString = String.fromString $ "insert into " ++ tableValue table ++ columns ++ " values " ++ paramString
+
 insert :: (Insertable item) => Connection -> Query -> item -> IO ()
 insert conn queryStr item = do
   _ <- execute conn queryStr $ toInsertRow_ item
@@ -65,10 +72,24 @@ update conn queryStr item = do
   _ <- execute conn queryStr $ toUpdateRow_ item
   return ()
 
+update_ :: (Updateable item) => Connection -> Table -> String -> String -> item -> IO ()
+update_ conn table columns params item = do
+  _ <- execute conn qStr $ toUpdateRow_ item
+  return ()
+  where
+    qStr = String.fromString $ "update " ++ tableValue table ++ " set " ++ columns ++ " where id = ?"
+
 delete :: (ToRow id) => Connection -> Query -> id -> IO ()
 delete conn queryStr id = do
   _ <- execute conn queryStr id
   return ()
+
+delete_ :: (ToRow id) => Connection -> Table -> id -> IO ()
+delete_ conn table id = do
+  _ <- execute conn qStr id
+  return ()
+  where
+    qStr = String.fromString $ "delete from " ++ tableValue table ++ " where id = ?"
 
   -- findByIdSql :: a -> Text
   -- findByIdSql e = findAllSql e <> " where id = ?"

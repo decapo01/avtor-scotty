@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e6be2747d7872d1b93475ec3299d26110c3150d897b57b368080048cb04d7e5e
+-- hash: 0f6aec92adf55a8ec77bc84b6d459a7b000bc40205dbeed9f83e6f930cc4535d
 
 name:           avtor-scotty
 version:        0.1.0.0
@@ -27,10 +27,16 @@ source-repository head
 
 library
   exposed-modules:
+      Blah.Blah
+      Common.Views
       DbCommon
       Lib
       Repo.AccountRepo
+      Repo.UnverifiedUserRepo
       Repo.UserRepo
+      Routes.Routes
+      Validators
+      Views.ItemViews
   other-modules:
       Paths_avtor_scotty
   hs-source-dirs:
@@ -38,9 +44,17 @@ library
   build-depends:
       avtor-core-hs
     , base >=4.7 && <5
+    , blaze-builder
+    , blaze-html
+    , digestive-functors
+    , digestive-functors-scotty
+    , hspec
     , postgresql-simple
+    , scotty
     , text
     , uuid
+    , wai
+    , warp
   default-language: Haskell2010
 
 executable avtor-scotty-exe
@@ -54,15 +68,24 @@ executable avtor-scotty-exe
       avtor-core-hs
     , avtor-scotty
     , base >=4.7 && <5
+    , blaze-builder
+    , blaze-html
+    , digestive-functors
+    , digestive-functors-scotty
+    , hspec
     , postgresql-simple
+    , scotty
     , text
     , uuid
+    , wai
+    , warp
   default-language: Haskell2010
 
 test-suite avtor-scotty-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Unit.One
       Paths_avtor_scotty
   hs-source-dirs:
       test
@@ -71,7 +94,15 @@ test-suite avtor-scotty-test
       avtor-core-hs
     , avtor-scotty
     , base >=4.7 && <5
+    , blaze-builder
+    , blaze-html
+    , digestive-functors
+    , digestive-functors-scotty
+    , hspec
     , postgresql-simple
+    , scotty
     , text
     , uuid
+    , wai
+    , warp
   default-language: Haskell2010
