@@ -24,6 +24,7 @@ dependencies:
 - digestive-functors
 - digestive-functors-scotty
 - text
+- mono-traversable
 - avtor-core-hs
 - postgresql-simple
 - uuid

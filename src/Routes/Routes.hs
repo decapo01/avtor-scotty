@@ -29,6 +29,6 @@ routes = do
       Nothing -> html $ renderHtml $ layout "Sign In" [bootstrap3Link] [] (loginView defaultForm (loginErrorsFromView view))
 
 
-loginErrorsFromView :: View Text -> LoginErrors
+loginErrorsFromView :: View [Text] -> LoginErrors
 loginErrorsFromView view =
-  LoginErrors (errors "username" view) (errors "password" view)
+  LoginErrors (errors "username" view !! 0) (errors "password" view !! 0)

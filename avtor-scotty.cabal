@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0f6aec92adf55a8ec77bc84b6d459a7b000bc40205dbeed9f83e6f930cc4535d
+-- hash: 7040deeab19d6962d4c518bbe011a6d4374125f2153bd4941257dc0450c58194
 
 name:           avtor-scotty
 version:        0.1.0.0
@@ -49,6 +49,7 @@ library
     , digestive-functors
     , digestive-functors-scotty
     , hspec
+    , mono-traversable
     , postgresql-simple
     , scotty
     , text
@@ -73,6 +74,7 @@ executable avtor-scotty-exe
     , digestive-functors
     , digestive-functors-scotty
     , hspec
+    , mono-traversable
     , postgresql-simple
     , scotty
     , text
@@ -99,6 +101,7 @@ test-suite avtor-scotty-test
     , digestive-functors
     , digestive-functors-scotty
     , hspec
+    , mono-traversable
     , postgresql-simple
     , scotty
     , text
