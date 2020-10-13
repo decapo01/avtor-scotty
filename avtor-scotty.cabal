@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7040deeab19d6962d4c518bbe011a6d4374125f2153bd4941257dc0450c58194
+-- hash: 847afdb93a9e1231eeb4c613c48ccb80968c1a9b72172e8eec206a3a24f07989
 
 name:           avtor-scotty
 version:        0.1.0.0
@@ -51,6 +51,7 @@ library
     , hspec
     , mono-traversable
     , postgresql-simple
+    , regex-compat
     , scotty
     , text
     , uuid
@@ -76,6 +77,7 @@ executable avtor-scotty-exe
     , hspec
     , mono-traversable
     , postgresql-simple
+    , regex-compat
     , scotty
     , text
     , uuid
@@ -103,6 +105,7 @@ test-suite avtor-scotty-test
     , hspec
     , mono-traversable
     , postgresql-simple
+    , regex-compat
     , scotty
     , text
     , uuid

@@ -15,6 +15,8 @@ import Validators (validateLogin)
 import Text.Digestive.View (absoluteRef, View)
 import Text.Digestive (errors)
 
+import qualified Data.List as List
+
 
 defaultForm = LoginForm "" ""
 defaultErrors = LoginErrors [] []
@@ -28,7 +30,12 @@ routes = do
       Just _  -> redirect "/"
       Nothing -> html $ renderHtml $ layout "Sign In" [bootstrap3Link] [] (loginView defaultForm (loginErrorsFromView view))
 
+idxOr :: [a] -> Int -> a -> a
+idxOr items idx alt =
+    if List.length items  >= (idx + 1)
+      then items !! idx
+      else alt
 
 loginErrorsFromView :: View [Text] -> LoginErrors
 loginErrorsFromView view =
-  LoginErrors (errors "username" view !! 0) (errors "password" view !! 0)
+  LoginErrors (idxOr (errors "username" view) 0 []) (idxOr (errors "password" view ) 0 [])
