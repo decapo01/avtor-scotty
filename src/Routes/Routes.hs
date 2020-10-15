@@ -3,7 +3,7 @@ module Routes.Routes where
 
 import Data.Text (Text, unpack)
 import Data.Text.Lazy (toStrict, fromStrict)
-import Web.Scotty
+-- import Web.Scotty
 import Common.Views (layout, loginView, bootstrap3Link, LoginForm(..), LoginErrors(..))
 
 import Text.Blaze.Html.Renderer.Utf8 (renderHtmlBuilder)
@@ -16,11 +16,22 @@ import Text.Digestive.View (absoluteRef, View)
 import Text.Digestive (errors)
 
 import qualified Data.List as List
+import Avtor (User(User))
+import Web.Scotty.Trans
+import Web.Scotty.Internal.Types (ScottyError)
+import Control.Monad.IO.Class (MonadIO)
+
+import qualified Web.Scotty as Scotty
 
 
 defaultForm = LoginForm "" ""
 defaultErrors = LoginErrors [] []
 
+
+data State = State
+  { users :: [User] }
+
+routes :: (ScottyError e, MonadIO m) => ScottyT e m ()
 routes = do
   get "/signin" $ do
     html $ renderHtml $ layout "Sign In" [bootstrap3Link] [] (loginView defaultForm defaultErrors)
