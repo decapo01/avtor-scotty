@@ -22,17 +22,18 @@ import Web.Scotty.Internal.Types (ScottyError)
 import Control.Monad.IO.Class (MonadIO)
 
 import qualified Web.Scotty as Scotty
+import Data.IORef (IORef)
 
 
 defaultForm = LoginForm "" ""
 defaultErrors = LoginErrors [] []
 
 
-data State = State
+data AppState = AppState
   { users :: [User] }
 
-routes :: (ScottyError e, MonadIO m) => ScottyT e m ()
-routes = do
+routes :: (ScottyError e, MonadIO m) => IORef AppState -> ScottyT e m ()
+routes stateM = do
   get "/signin" $ do
     html $ renderHtml $ layout "Sign In" [bootstrap3Link] [] (loginView defaultForm defaultErrors)
   post "/signin" $ do
@@ -41,6 +42,7 @@ routes = do
       Just _  -> redirect "/"
       Nothing -> html $ renderHtml $ layout "Sign In" [bootstrap3Link] [] (loginView defaultForm (loginErrorsFromView view))
 
+-- todo: put in commons
 idxOr :: [a] -> Int -> a -> a
 idxOr items idx alt =
     if List.length items  >= (idx + 1)

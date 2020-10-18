@@ -6,12 +6,17 @@ module Lib
 import Web.Scotty (scotty)
 import Routes.Routes (routes)
 import Data.Text
-import Avtor (SignInDto(..))
+import Avtor (User, SignInDto(..))
 import DbCommon (findAll, update, findById, createDbQuery, createQuery, insert, Item(..), ItemId(..), Entity, itemTable)
 import Database.PostgreSQL.Simple (execute_, connect, defaultConnectInfo, connectHost, connectDatabase, connectUser, connectPassword)
 import Control.Monad (forM, forM_)
 import Control.Monad.IO.Class (MonadIO(liftIO))
 import Blah.Blah (foo, blah)
+import GHC.IORef (IORef(IORef))
+
+import qualified Routes.Routes as MyRoutes
+import Data.IORef (newIORef)
+
 -- import Blah.Blah (foo, blah)
 
 s = SignInDto { signInDtoEmail = "", signInDtoPassword = ""}
@@ -49,10 +54,16 @@ itemsConnection =
   }
 
 
+users :: [User]
+users = []
+
+appState = MyRoutes.AppState []
+
 someFunc :: IO ()
 someFunc = do
+  initialState <- newIORef appState
   scotty 3000 $ do
-    routes
+    routes initialState
   -- pgConn <- pgConnection
   -- execute_ pgConn createDbQuery
   -- itemsConn <- itemsConnection
