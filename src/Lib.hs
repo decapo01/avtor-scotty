@@ -15,6 +15,8 @@ import Blah.Blah (foo, blah)
 import GHC.IORef (IORef(IORef))
 
 import qualified Routes.Routes as MyRoutes
+
+import qualified Routes.SignUpRoutes as SignUpRoutes
 import Data.IORef (newIORef)
 
 -- import Blah.Blah (foo, blah)
@@ -64,6 +66,7 @@ someFunc = do
   initialState <- newIORef appState
   scotty 3000 $ do
     routes initialState
+    SignUpRoutes.routes
   -- pgConn <- pgConnection
   -- execute_ pgConn createDbQuery
   -- itemsConn <- itemsConnection

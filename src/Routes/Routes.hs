@@ -23,6 +23,7 @@ import Control.Monad.IO.Class (MonadIO)
 
 import qualified Web.Scotty as Scotty
 import Data.IORef (IORef)
+import Common.Commons (idxOr)
 
 
 defaultForm = LoginForm "" ""
@@ -41,13 +42,6 @@ routes stateM = do
     case result of
       Just _  -> redirect "/"
       Nothing -> html $ renderHtml $ layout "Sign In" [bootstrap3Link] [] (loginView defaultForm (loginErrorsFromView view))
-
--- todo: put in commons
-idxOr :: [a] -> Int -> a -> a
-idxOr items idx alt =
-    if List.length items  >= (idx + 1)
-      then items !! idx
-      else alt
 
 loginErrorsFromView :: View [Text] -> LoginErrors
 loginErrorsFromView view =

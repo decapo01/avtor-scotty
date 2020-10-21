@@ -23,6 +23,7 @@ dependencies:
 - base >= 4.7 && < 5
 - digestive-functors
 - digestive-functors-scotty
+- digestive-functors-blaze
 - text
 - mono-traversable
 - avtor-core-hs

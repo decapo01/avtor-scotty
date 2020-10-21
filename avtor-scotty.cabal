@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 13a6f3f55802734890aa977dfa7f2080c1e4b95d45c909d7bc7235bde8a0333d
+-- hash: 0eba7578f339b895fcd404996e20a57527364b8b3bdc37d56aef75d4dd7872aa
 
 name:           avtor-scotty
 version:        0.1.0.0
@@ -28,6 +28,7 @@ source-repository head
 library
   exposed-modules:
       Blah.Blah
+      Common.Commons
       Common.Views
       DbCommon
       Lib
@@ -38,8 +39,10 @@ library
       Repo.UnverifiedUserRepo
       Repo.UserRepo
       Routes.Routes
+      Routes.SignUpRoutes
       Validators
       Views.ItemViews
+      Views.SignUpViews
   other-modules:
       Paths_avtor_scotty
   hs-source-dirs:
@@ -50,6 +53,7 @@ library
     , blaze-builder
     , blaze-html
     , digestive-functors
+    , digestive-functors-blaze
     , digestive-functors-scotty
     , hspec
     , mono-traversable
@@ -76,6 +80,7 @@ executable avtor-scotty-exe
     , blaze-builder
     , blaze-html
     , digestive-functors
+    , digestive-functors-blaze
     , digestive-functors-scotty
     , hspec
     , mono-traversable
@@ -104,6 +109,7 @@ test-suite avtor-scotty-test
     , blaze-builder
     , blaze-html
     , digestive-functors
+    , digestive-functors-blaze
     , digestive-functors-scotty
     , hspec
     , mono-traversable

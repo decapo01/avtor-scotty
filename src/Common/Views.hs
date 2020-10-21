@@ -52,7 +52,7 @@ loginComponent :: LoginForm -> LoginErrors -> Markup
 loginComponent loginForm loginErrors =
   form ! method "POST" $ do
     div ! class_ "form-group" $ do
-      label ! class_ "control-lable" $ text "Username"
+      label ! class_ "control-label" $ text "Username"
       input ! name "signin-form.username" ! class_ "form-control" ! type_ "text" ! value uname
       div $ do
         ul $ do
