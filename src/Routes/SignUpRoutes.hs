@@ -16,9 +16,14 @@ import Validators (validatePassword, validateEmail)
 import qualified Text.Digestive.Form as Form
 import Text.Digestive.View (View, errors, fieldInputText)
 import Common.Commons (idxOr)
+import Text.Digestive (Result)
+import Text.Digestive.Types (Result(Success))
+import Text.Digestive (Result(Error))
 
 routes :: (ScottyError e, MonadIO m) => ScottyT e m ()
 routes = do
+  get "/blah" $ do
+    html $ "blah"
   get "/signup" $ do
     html $ renderHtml $ layout "Sign Up" [bootstrap3Link] [] (signUpFormView (SignUpForm "" "" "") defaultSignUpFormErrors)
   post "/signup" $ do
@@ -31,8 +36,9 @@ routes = do
 validateSignUp :: Monad m => Form [Text] m SignUpForm
 validateSignUp = SignUpForm
   <$> "username" .: validate validateEmail (Form.text Nothing)
-  <*> "password" .: validate validatePassword (Form.text Nothing)
-  <*> "confirmPassword" .: validate validatePassword (Form.text Nothing)
+  <*> "confirmPassword" .: validate validateConfirmPassword $ (,)
+    <$> "password" .: (Form.text Nothing)
+    <*> "confirmPassword" .: (Form.text Nothing)
 
 errorsFromView :: View [Text] -> SignUpFormErrors
 errorsFromView view =
@@ -47,3 +53,9 @@ signUpFormFromView view =
     (fieldInputText "username" view)
     (fieldInputText "password" view)
     (fieldInputText "confirmPassword" view)
+
+validateConfirmPassword :: Text -> Text -> Result Text Text
+validateConfirmPassword confirmPassword password =
+  if password == confirmPassword
+    then Success password
+    else Error "passwords do not match"

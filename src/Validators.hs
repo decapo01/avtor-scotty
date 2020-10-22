@@ -62,7 +62,7 @@ textContains text char =
 
 textContains_ :: [Char] -> Text  -> Bool
 textContains_ chars text =
-  foldr (\i a -> a || textContains text i) True chars
+  foldr (\i a -> a || textContains text i) False chars
 
 textContainsValidation :: [Char] -> Text -> Result Text Text
 textContainsValidation chars text =

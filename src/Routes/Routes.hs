@@ -35,6 +35,8 @@ data AppState = AppState
 
 routes :: (ScottyError e, MonadIO m) => IORef AppState -> ScottyT e m ()
 routes stateM = do
+  get "/foo" $ do
+    html "foo"
   get "/signin" $ do
     html $ renderHtml $ layout "Sign In" [bootstrap3Link] [] (loginView defaultForm defaultErrors)
   post "/signin" $ do
