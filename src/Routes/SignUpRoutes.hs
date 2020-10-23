@@ -36,23 +36,32 @@ routes = do
 validateSignUp :: Monad m => Form [Text] m SignUpForm
 validateSignUp = SignUpForm
   <$> "username" .: validate validateEmail (Form.text Nothing)
-  <*> "confirmPassword" .: validate validateConfirmPassword $ (,)
-    <$> "password" .: (Form.text Nothing)
-    <*> "confirmPassword" .: (Form.text Nothing)
+  <*> "password" .: (Form.text Nothing)
+  <*> "passwordGroup" .: vpass
+  where
+    vpass :: Monad m => Form [Text] m Text
+    vpass = 
+      validate fst' $ (,) <$> ("password" .: validate validatePassword (Form.text Nothing))
+                          <*> ("confirmPassword" .: Form.text Nothing)
+    fst' :: (Text, Text) -> Result [Text] Text
+    fst' (p1, p2) =
+      if p1 == p2
+        then Success p1
+        else Error ["passwords do not match"]
 
 errorsFromView :: View [Text] -> SignUpFormErrors
 errorsFromView view =
   SignUpFormErrors
     (idxOr (errors "username" view) 0 [])
-    (idxOr (errors "password" view) 0 [])
-    (idxOr (errors "confirmPassword" view) 0 [])
+    (idxOr (errors "passwordGroup.password" view) 0 [])
+    (idxOr (errors "passwordGroup" view) 0 [])
 
 signUpFormFromView :: View [Text] -> SignUpForm
 signUpFormFromView view =
   SignUpForm
     (fieldInputText "username" view)
-    (fieldInputText "password" view)
-    (fieldInputText "confirmPassword" view)
+    (fieldInputText "passwordGroup.password" view)
+    (fieldInputText "passwordGroup.confirmPassword" view)
 
 validateConfirmPassword :: Text -> Text -> Result Text Text
 validateConfirmPassword confirmPassword password =
