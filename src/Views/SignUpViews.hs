@@ -31,8 +31,8 @@ signUpFormView signUpForm errors =
   div ! class_ "container" $ do
     form ! method "POST" $ do
       textInput "Username" "signUpForm.username" (attrFromText (username signUpForm)) (usernameErrors errors)
-      textInput "Password" "signUpForm.passwordGroup.password" (attrFromText (password signUpForm)) (passwordErrors errors)
-      textInput "Confirm Password" "signUpForm.passwordGroup.confirmPassword" (attrFromText (confirmPassword signUpForm)) (confirmPasswordErrors errors)
+      passwordInput "Password" "signUpForm.passwordGroup.password" (attrFromText (password signUpForm)) (passwordErrors errors)
+      passwordInput "Confirm Password" "signUpForm.passwordGroup.confirmPassword" (attrFromText (confirmPassword signUpForm)) (confirmPasswordErrors errors)
       div ! class_ "form-group" $ do
         input ! type_ "submit" ! class_ "btn btn-primary" ! value "Sign Up"
     
