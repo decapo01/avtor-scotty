@@ -2,12 +2,11 @@
 module Routes.SignUpRoutes where
 
 import Web.Scotty.Trans
-import Control.Monad.IO.Class (MonadIO)
+import Control.Monad.IO.Class (liftIO, MonadIO)
 import Text.Blaze.Html.Renderer.Text (renderHtml)
 import Common.Views (bootstrap3Link, layout)
 import Views.SignUpViews (SignUpFormErrors, SignUpFormErrors(..), SignUpForm, SignUpForm(..), signUpFormView, defaultSignUpFormErrors)
 import Text.Digestive.Scotty (runForm)
--- import Text.Digestive.Blaze.Html5 (inputText)
 
 import Data.Text (Text)
 import Text.Digestive.Form (validate, (.:), Form)
@@ -19,6 +18,10 @@ import Common.Commons (idxOr)
 import Text.Digestive (Result)
 import Text.Digestive.Types (Result(Success))
 import Text.Digestive (Result(Error))
+import Avtor (AvtorError, signUpDtoPassword, signUpDtoEmail, SignUpDto(..))
+import Data.UUID.V4 (nextRandom)
+
+import qualified Repo.InMem.UserRepo as UserRepo
 
 routes :: (ScottyError e, MonadIO m) => ScottyT e m ()
 routes = do
@@ -29,9 +32,22 @@ routes = do
   post "/signup" $ do
     (view, result) <- runForm "signUpForm" validateSignUp
     case result of
-      Just _ -> redirect "/"
+      Just signUpForm -> do
+        _ <- liftIO $ signUp createSignUpDto UserRepo.findByUsername hashPassword nextRandom nextRandom nextRandom
+        redirect "/"
+        where
+          createSignUpDto = SignUpDto
+            { signUpDtoEmail = username signUpForm
+            , signUpDtoPassword = password signUpForm
+            , signUpDtoConfirmPassword = confirmPassword signUpForm
+            , signUpDtoAccountId = Nothing
+            }
       Nothing -> html $ renderHtml $ layout "Sign Up" [bootstrap3Link] [] (signUpFormView (signUpFormFromView view) $ errorsFromView view)
 
+
+hashPassword :: Text -> IO (Either AvtorError Text)
+hashPassword pass = do
+  return $ Right pass
 
 validateSignUp :: Monad m => Form [Text] m SignUpForm
 validateSignUp = SignUpForm

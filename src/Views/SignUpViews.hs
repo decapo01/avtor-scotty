@@ -36,7 +36,6 @@ signUpFormView signUpForm errors =
       div ! class_ "form-group" $ do
         input ! type_ "submit" ! class_ "btn btn-primary" ! value "Sign Up"
     
-
 type Label = Text
 type Name = AttributeValue
 type Value = AttributeValue
