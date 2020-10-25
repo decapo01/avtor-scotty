@@ -10,11 +10,11 @@ packages:
     git: https://github.com/decapo01/avtor-core-hs.git
     pantry-tree:
       size: 677
-      sha256: be5ccab3702f7ca1ad069a3d84f713367ad9569c4d53f75d1c159ca4735f59c8
-    commit: 9875f4b15a4a672ccbdfebf68f0b98605a6728f1
+      sha256: 53c22de679da238b13bd92644f68f9506a20c6eb5ee7214790613b80a2ccfc98
+    commit: 90e327533deb32c627e2b39971153eb6ca8e7bab
   original:
     git: https://github.com/decapo01/avtor-core-hs.git
-    commit: 9875f4b15a4a672ccbdfebf68f0b98605a6728f1
+    commit: 90e327533deb32c627e2b39971153eb6ca8e7bab
 - completed:
     hackage: digestive-functors-0.8.4.2@sha256:badff1797b6dcd860a48ed4558985b2f6bec501e1016fa5afd9d7d6b0d8e4c08,3364
     pantry-tree:

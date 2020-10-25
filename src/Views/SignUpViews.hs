@@ -22,9 +22,10 @@ data SignUpFormErrors = SignUpFormErrors
   { usernameErrors :: [Text]
   , passwordErrors :: [Text]
   , confirmPasswordErrors :: [Text]
+  , global :: Text
   }
 
-defaultSignUpFormErrors = SignUpFormErrors [] [] []
+defaultSignUpFormErrors = SignUpFormErrors [] [] [] ""
 
 signUpFormView :: SignUpForm  -> SignUpFormErrors -> Markup
 signUpFormView signUpForm errors =

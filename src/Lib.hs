@@ -61,12 +61,17 @@ users = []
 
 appState = MyRoutes.AppState []
 
+signUpState = SignUpRoutes.SignUpState [] []
+
 someFunc :: IO ()
 someFunc = do
   initialState <- newIORef appState
+  signUpRef    <- newIORef signUpState
+  usersRef <- newIORef []
+  uvUsersRef <- newIORef []
   scotty 3000 $ do
     routes initialState
-    SignUpRoutes.routes
+    SignUpRoutes.routes uvUsersRef usersRef
   -- pgConn <- pgConnection
   -- execute_ pgConn createDbQuery
   -- itemsConn <- itemsConnection

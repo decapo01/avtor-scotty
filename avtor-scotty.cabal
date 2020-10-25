@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0eba7578f339b895fcd404996e20a57527364b8b3bdc37d56aef75d4dd7872aa
+-- hash: 708f7e71f2247b1ac236493db1f85a85e3ca8639d9cc0ee6cd66a4be4601fb1d
 
 name:           avtor-scotty
 version:        0.1.0.0
@@ -35,6 +35,7 @@ library
       Repo.AccountRepo
       Repo.InMem.AccountRepo
       Repo.InMem.GenericRepo
+      Repo.InMem.UnverifiedUserRepo
       Repo.InMem.UserRepo
       Repo.UnverifiedUserRepo
       Repo.UserRepo

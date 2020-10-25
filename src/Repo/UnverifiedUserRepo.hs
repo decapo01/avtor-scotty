@@ -1,6 +1,6 @@
 module Repo.UnverifiedUserRepo where
 
-import Avtor (UnverifiedUser, UserId(..), UnverifiedUser(..), VerToken(..), AccountId(..))
+import Avtor (VerificationToken, verificationToken, VerificationToken(..), UnverifiedUser, UserId(..), UnverifiedUser(..), VerToken(..), AccountId(..))
 
 import Database.PostgreSQL.Simple.ToField (Action(Escape), toField, ToField)
 import Database.PostgreSQL.Simple.FromField (FromField, fromField)
@@ -16,6 +16,10 @@ instance ToField UserId where
 
 instance ToField VerToken where
   toField t = Escape $ toASCIIBytes $ verToken t
+
+instance ToField VerificationToken where
+  toField t = Escape $ toASCIIBytes $ verificationToken t
+
 
 instance ToField AccountId where
   toField aId = Escape $ toASCIIBytes $ _accountId aId
@@ -44,6 +48,11 @@ instance FromField VerToken where
   fromField field mdata = do
     x <- fromField field mdata
     return $ VerToken x
+
+instance FromField VerificationToken where
+  fromField field mdata = do
+    x <- fromField field mdata
+    return $ VerificationToken x
 
 instance FromField AccountId where
   fromField field mdata = do

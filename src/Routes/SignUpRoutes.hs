@@ -18,31 +18,79 @@ import Common.Commons (idxOr)
 import Text.Digestive (Result)
 import Text.Digestive.Types (Result(Success))
 import Text.Digestive (Result(Error))
-import Avtor (AvtorError, signUpDtoPassword, signUpDtoEmail, SignUpDto(..))
+import Avtor (userEmail, unverifiedUserToken, VerificationToken, verifyUser, unverifiedUserEmail, AvtorError(..), User, signUp, UserId, UnverifiedUser, AvtorError, signUpDtoPassword, signUpDtoEmail, SignUpDto(..), VerificationToken(..))
 import Data.UUID.V4 (nextRandom)
 
 import qualified Repo.InMem.UserRepo as UserRepo
+import qualified Repo.InMem.UnverifiedUserRepo as UnverifiedUserRepo
+import Data.IORef (newIORef, readIORef, IORef)
 
-routes :: (ScottyError e, MonadIO m) => ScottyT e m ()
-routes = do
+import qualified Data.Text.Lazy as LTxt
+import qualified Data.Text as Txt
+import qualified Data.UUID as Uuid
+
+import Data.UUID (UUID)
+
+data SignUpState = SignUpState
+  { unverifiedUsers :: [UnverifiedUser]
+  , users :: [User]
+  }
+
+data Config
+  = ProdConfig {}
+  | DevConfig
+  { getFineUserByEmail :: IORef [User] -> Text -> IO (Maybe User)
+  }
+
+routes :: (ScottyError e, MonadIO m) => IORef [UnverifiedUser] -> IORef [User] -> ScottyT e m ()
+routes uvUsersRef usersRef = do
   get "/blah" $ do
     html $ "blah"
   get "/signup" $ do
     html $ renderHtml $ layout "Sign Up" [bootstrap3Link] [] (signUpFormView (SignUpForm "" "" "") defaultSignUpFormErrors)
+  -- todo: remove this
+  get "/unverified-users" $ do
+    uvUsers <- liftIO $ readIORef uvUsersRef
+    html $ LTxt.pack $ show $ map (\x -> (unverifiedUserEmail x, unverifiedUserToken x)) uvUsers
+  -- todo: remove this
+  get "/users" $ do
+    users <- liftIO $ readIORef usersRef
+    html $ LTxt.pack $ show $ map (\x -> userEmail x) users
   post "/signup" $ do
     (view, result) <- runForm "signUpForm" validateSignUp
     case result of
       Just signUpForm -> do
-        _ <- liftIO $ signUp createSignUpDto UserRepo.findByUsername hashPassword nextRandom nextRandom nextRandom
-        redirect "/"
+        unverifiedUsersRef <- liftIO $ readIORef uvUsersRef
+        -- todo: change this to take only one nextRandom
+        signUpRes <- liftIO $ signUp createSignUpDto (UserRepo.findByUsername usersRef) hashPassword  genUuid  genUuid  genUuid  (insertUnverifiedUser uvUsersRef) sendEmail removeEmailIfSendFails
+        case signUpRes of
+          Right _ -> redirect "/"
+          Left err ->
+            case err of
+              UserExists -> redirect "/"
+              _ -> redirect "/"
         where
+          -- todo: make mapper for this
           createSignUpDto = SignUpDto
             { signUpDtoEmail = username signUpForm
             , signUpDtoPassword = password signUpForm
             , signUpDtoConfirmPassword = confirmPassword signUpForm
             , signUpDtoAccountId = Nothing
             }
+          userExistsErrors = defaultSignUpFormErrors { global = "User Exists" }
       Nothing -> html $ renderHtml $ layout "Sign Up" [bootstrap3Link] [] (signUpFormView (signUpFormFromView view) $ errorsFromView view)
+  get "/verify/:token" $ do
+    tokenText <- param "token"
+    let tokenUuidMay = Uuid.fromText tokenText
+    case tokenUuidMay of
+      Nothing -> html "We had a problem processing your request"
+      Just tokenUuid -> do
+        res <- liftIO $ 
+          verifyUser 
+            (VerificationToken tokenUuid) 
+            (UnverifiedUserRepo.findByToken uvUsersRef)
+            (insertUser usersRef)
+        redirect "/"
 
 
 hashPassword :: Text -> IO (Either AvtorError Text)
@@ -71,6 +119,7 @@ errorsFromView view =
     (idxOr (errors "username" view) 0 [])
     (idxOr (errors "passwordGroup.password" view) 0 [])
     (idxOr (errors "passwordGroup" view) 0 [])
+    ""
 
 signUpFormFromView :: View [Text] -> SignUpForm
 signUpFormFromView view =
@@ -84,3 +133,27 @@ validateConfirmPassword confirmPassword password =
   if password == confirmPassword
     then Success password
     else Error "passwords do not match"
+
+-- todo: make maybe error in avtor core
+insertUnverifiedUser :: IORef [UnverifiedUser] -> UnverifiedUser -> IO (Either AvtorError ())
+insertUnverifiedUser ref user = do
+  UnverifiedUserRepo.insert ref user
+  return $ Right ()
+
+-- todo: really implement these two functions
+sendEmail :: Text -> IO (Either AvtorError ())
+sendEmail emailBody = do
+  putStrLn $ Txt.unpack emailBody
+  return $ Right  ()
+
+removeEmailIfSendFails :: UserId -> IO (Either AvtorError ())
+removeEmailIfSendFails userId =
+  return $ Right ()
+
+genUuid :: () -> IO UUID
+genUuid _ = nextRandom
+
+insertUser :: IORef [User] -> User -> IO (Either AvtorError ())
+insertUser userRef user = do
+  UserRepo.insert userRef user
+  return $ Right ()
