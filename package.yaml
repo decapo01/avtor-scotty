@@ -24,6 +24,7 @@ dependencies:
 - digestive-functors
 - digestive-functors-scotty
 - digestive-functors-blaze
+- cache
 - text
 - mono-traversable
 - avtor-core-hs

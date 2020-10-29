@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 708f7e71f2247b1ac236493db1f85a85e3ca8639d9cc0ee6cd66a4be4601fb1d
+-- hash: bb19179f81c1c28e32c47f0c2538c1e37853745d05437d94ae64fa018160ac6c
 
 name:           avtor-scotty
 version:        0.1.0.0
@@ -30,6 +30,7 @@ library
       Blah.Blah
       Common.Commons
       Common.Views
+      Config
       DbCommon
       Lib
       Repo.AccountRepo
@@ -53,6 +54,7 @@ library
     , base >=4.7 && <5
     , blaze-builder
     , blaze-html
+    , cache
     , digestive-functors
     , digestive-functors-blaze
     , digestive-functors-scotty
@@ -80,6 +82,7 @@ executable avtor-scotty-exe
     , base >=4.7 && <5
     , blaze-builder
     , blaze-html
+    , cache
     , digestive-functors
     , digestive-functors-blaze
     , digestive-functors-scotty
@@ -109,6 +112,7 @@ test-suite avtor-scotty-test
     , base >=4.7 && <5
     , blaze-builder
     , blaze-html
+    , cache
     , digestive-functors
     , digestive-functors-blaze
     , digestive-functors-scotty

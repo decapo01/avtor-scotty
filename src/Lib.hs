@@ -18,6 +18,7 @@ import qualified Routes.Routes as MyRoutes
 
 import qualified Routes.SignUpRoutes as SignUpRoutes
 import Data.IORef (newIORef)
+import Config
 
 -- import Blah.Blah (foo, blah)
 
@@ -69,9 +70,10 @@ someFunc = do
   signUpRef    <- newIORef signUpState
   usersRef <- newIORef []
   uvUsersRef <- newIORef []
+  let config = InMemConfig usersRef uvUsersRef
   scotty 3000 $ do
     routes initialState
-    SignUpRoutes.routes uvUsersRef usersRef
+    SignUpRoutes.routes config
   -- pgConn <- pgConnection
   -- execute_ pgConn createDbQuery
   -- itemsConn <- itemsConnection

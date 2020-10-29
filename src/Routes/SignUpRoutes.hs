@@ -23,46 +23,48 @@ import Data.UUID.V4 (nextRandom)
 
 import qualified Repo.InMem.UserRepo as UserRepo
 import qualified Repo.InMem.UnverifiedUserRepo as UnverifiedUserRepo
-import Data.IORef (newIORef, readIORef, IORef)
+import Data.IORef (modifyIORef, newIORef, readIORef, IORef)
 
 import qualified Data.Text.Lazy as LTxt
 import qualified Data.Text as Txt
 import qualified Data.UUID as Uuid
+import qualified Data.List as List
 
 import Data.UUID (UUID)
+import Config (Config(..))
 
 data SignUpState = SignUpState
   { unverifiedUsers :: [UnverifiedUser]
   , users :: [User]
   }
 
-data Config
-  = ProdConfig {}
-  | DevConfig
-  { getFineUserByEmail :: IORef [User] -> Text -> IO (Maybe User)
-  }
+-- data Config
+--   = ProdConfig {}
+--   | DevConfig
+--   { getFineUserByEmail :: IORef [User] -> Text -> IO (Maybe User)
+--   }
 
-routes :: (ScottyError e, MonadIO m) => IORef [UnverifiedUser] -> IORef [User] -> ScottyT e m ()
-routes uvUsersRef usersRef = do
+routes :: (ScottyError e, MonadIO m) => Config -> ScottyT e m ()
+routes config = do
   get "/blah" $ do
     html $ "blah"
   get "/signup" $ do
     html $ renderHtml $ layout "Sign Up" [bootstrap3Link] [] (signUpFormView (SignUpForm "" "" "") defaultSignUpFormErrors)
   -- todo: remove this
   get "/unverified-users" $ do
-    uvUsers <- liftIO $ readIORef uvUsersRef
+    uvUsers <- liftIO $ fetchUvUsers config
     html $ LTxt.pack $ show $ map (\x -> (unverifiedUserEmail x, unverifiedUserToken x)) uvUsers
   -- todo: remove this
   get "/users" $ do
-    users <- liftIO $ readIORef usersRef
+    users <- liftIO $ fetchUsers config
     html $ LTxt.pack $ show $ map (\x -> userEmail x) users
   post "/signup" $ do
     (view, result) <- runForm "signUpForm" validateSignUp
     case result of
       Just signUpForm -> do
-        unverifiedUsersRef <- liftIO $ readIORef uvUsersRef
+        unverifiedUsersRef <- liftIO $ fetchUvUsers config
         -- todo: change this to take only one nextRandom
-        signUpRes <- liftIO $ signUp createSignUpDto (UserRepo.findByUsername usersRef) hashPassword  genUuid  genUuid  genUuid  (insertUnverifiedUser uvUsersRef) sendEmail removeEmailIfSendFails
+        signUpRes <- liftIO $ signUp createSignUpDto (findByUsername config) hashPassword  genUuid  genUuid  genUuid  (insertUvUser config) sendEmail removeEmailIfSendFails
         case signUpRes of
           Right _ -> redirect "/"
           Left err ->
@@ -88,10 +90,43 @@ routes uvUsersRef usersRef = do
         res <- liftIO $ 
           verifyUser 
             (VerificationToken tokenUuid) 
-            (UnverifiedUserRepo.findByToken uvUsersRef)
-            (insertUser usersRef)
+            (findByToken config)
+            (insertUser config)
         redirect "/"
 
+
+fetchUvUsers :: Config -> IO [UnverifiedUser]
+fetchUvUsers config =
+  case config of
+    c@InMemConfig{} -> readIORef $ (unverifiedUsersRef c)
+    _ -> return $ []
+
+fetchUsers :: Config -> IO [User]
+fetchUsers c@InMemConfig{} = readIORef $ usersRef $ c
+fetchUsers _ = return []
+
+
+findByUsername :: Config -> Text -> IO (Maybe User)
+
+findByUsername c@InMemConfig{} uname = do
+  us <- readIORef $ usersRef $ c
+  return $ List.find (\u -> (userEmail u) == uname) us
+
+findByUsername _ uname = return $ Nothing
+
+findByToken :: Config -> VerificationToken -> IO (Maybe UnverifiedUser)
+findByToken c@InMemConfig{} token = do
+  UnverifiedUserRepo.findByToken (unverifiedUsersRef c) token
+
+findByToken _ token = return Nothing
+
+
+insertUvUser :: Config -> UnverifiedUser -> IO (Either AvtorError ())
+insertUvUser c@InMemConfig{} uvUser = do
+  UnverifiedUserRepo.insert (unverifiedUsersRef c) uvUser
+  return $ Right ()
+
+insertUvUser _ uvUser = return  $ Right ()
 
 hashPassword :: Text -> IO (Either AvtorError Text)
 hashPassword pass = do
@@ -153,7 +188,9 @@ removeEmailIfSendFails userId =
 genUuid :: () -> IO UUID
 genUuid _ = nextRandom
 
-insertUser :: IORef [User] -> User -> IO (Either AvtorError ())
-insertUser userRef user = do
-  UserRepo.insert userRef user
+insertUser :: Config -> User -> IO (Either AvtorError ())
+insertUser c@InMemConfig{} user = do
+  UserRepo.insert (usersRef c) user
   return $ Right ()
+
+insertUser _ user = return $ Right ()
