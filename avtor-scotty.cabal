@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: bb19179f81c1c28e32c47f0c2538c1e37853745d05437d94ae64fa018160ac6c
+-- hash: 054b500bacf59970609f0c40dc199c791a55e971ddc9809aa6db92d9c9279828
 
 name:           avtor-scotty
 version:        0.1.0.0
@@ -101,6 +101,7 @@ test-suite avtor-scotty-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      EndToEnd.Registration
       Unit.One
       Paths_avtor_scotty
   hs-source-dirs:
@@ -125,4 +126,5 @@ test-suite avtor-scotty-test
     , uuid
     , wai
     , warp
+    , webdriver
   default-language: Haskell2010

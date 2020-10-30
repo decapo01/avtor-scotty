@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Views.SignUpViews where
 
-import Prelude hiding (head, div)
+import Prelude hiding (head, div, id)
 
 import Text.Blaze.Html5
 import Text.Blaze.Html5.Attributes hiding (title, form, label)
@@ -30,7 +30,7 @@ defaultSignUpFormErrors = SignUpFormErrors [] [] [] ""
 signUpFormView :: SignUpForm  -> SignUpFormErrors -> Markup
 signUpFormView signUpForm errors =
   div ! class_ "container" $ do
-    form ! method "POST" $ do
+    form ! method "POST" ! id "signUpForm" $ do
       textInput "Username" "signUpForm.username" (attrFromText (username signUpForm)) (usernameErrors errors)
       passwordInput "Password" "signUpForm.passwordGroup.password" (attrFromText (password signUpForm)) (passwordErrors errors)
       passwordInput "Confirm Password" "signUpForm.passwordGroup.confirmPassword" (attrFromText (confirmPassword signUpForm)) (confirmPasswordErrors errors)
