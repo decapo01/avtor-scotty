@@ -31,9 +31,9 @@ signUpFormView :: SignUpForm  -> SignUpFormErrors -> Markup
 signUpFormView signUpForm errors =
   div ! class_ "container" $ do
     form ! method "POST" ! id "signUpForm" $ do
-      textInput "Username" "signUpForm.username" (attrFromText (username signUpForm)) (usernameErrors errors)
-      passwordInput "Password" "signUpForm.passwordGroup.password" (attrFromText (password signUpForm)) (passwordErrors errors)
-      passwordInput "Confirm Password" "signUpForm.passwordGroup.confirmPassword" (attrFromText (confirmPassword signUpForm)) (confirmPasswordErrors errors)
+      textInput "Username" "signUpForm.username" (attrFromText (username signUpForm)) "username-error" (usernameErrors errors)
+      passwordInput "Password" "signUpForm.passwordGroup.password" (attrFromText (password signUpForm)) "password-error" (passwordErrors errors)
+      passwordInput "Confirm Password" "signUpForm.passwordGroup.confirmPassword" (attrFromText (confirmPassword signUpForm)) "confirm-password-error" (confirmPasswordErrors errors)
       div ! class_ "form-group" $ do
         input ! type_ "submit" ! class_ "btn btn-primary" ! value "Sign Up"
     
@@ -42,25 +42,25 @@ type Name = AttributeValue
 type Value = AttributeValue
 type ErrMsgs = [Text]
 
-textInput :: Label -> Name -> Value -> ErrMsgs -> Markup
-textInput label_ name_ value_ errMsgs = do
+textInput :: Label -> Name -> Value -> AttributeValue -> ErrMsgs -> Markup
+textInput label_ name_ value_ errClass errMsgs = do
   div ! class_ "form-group" $ do
     label ! class_ (mkLabel errMsgs) $ text label_
     input ! class_ (mkFormControl errMsgs) ! name name_  ! type_ "text" ! value value_
-    div ! class_ "text-danger" $ do
+    div ! class_ ("text-danger ") $ do
       ul $ do
         forM_ errMsgs $ \errMsg ->
-          li $ text errMsg
+          li ! class_ errClass $ text errMsg
 
-passwordInput :: Label -> Name -> Value -> ErrMsgs -> Markup
-passwordInput label_ name_ value_ errMsgs = do
+passwordInput :: Label -> Name -> Value -> AttributeValue -> ErrMsgs -> Markup
+passwordInput label_ name_ value_ errClass errMsgs = do
   div ! class_ "form-group" $ do
     label ! class_ (mkLabel errMsgs) $ text label_
     input ! class_ (mkFormControl errMsgs) ! name name_  ! type_ "password" ! value value_
-    div ! class_ "text-danger" $ do
+    div ! class_ ("text-danger") $ do
       ul $ do
         forM_ errMsgs $ \errMsg ->
-          li $ text errMsg
+          li ! class_ errClass $ text errMsg
 
 mkLabel :: [Text] -> AttributeValue
 mkLabel msgs =

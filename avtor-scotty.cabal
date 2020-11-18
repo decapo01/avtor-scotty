@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 054b500bacf59970609f0c40dc199c791a55e971ddc9809aa6db92d9c9279828
+-- hash: dfee1eba53028d39b1d8741baa82e5cb2e769e6c681a5558cb8b5d10ddde4d47
 
 name:           avtor-scotty
 version:        0.1.0.0
@@ -108,7 +108,8 @@ test-suite avtor-scotty-test
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      avtor-core-hs
+      aeson
+    , avtor-core-hs
     , avtor-scotty
     , base >=4.7 && <5
     , blaze-builder
@@ -121,6 +122,7 @@ test-suite avtor-scotty-test
     , mono-traversable
     , postgresql-simple
     , regex-compat
+    , req
     , scotty
     , text
     , uuid

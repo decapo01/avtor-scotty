@@ -36,6 +36,13 @@ packages:
       sha256: 2584d35cf054e3daa2f961d7b68e1c0bafd68f99284c4e76509fc455a0380315
   original:
     hackage: digestive-functors-blaze-0.6.2.0@sha256:3aae259265b8517fb7efe2a7681d846e01f52c22f49f193aff550a1630f182d0,841
+- completed:
+    hackage: hspec-webdriver-1.2.0@sha256:eec2c4e435dc562f0d51ddf5d3aeea45aa703a03372b911b4cbeffa016d8a946,1713
+    pantry-tree:
+      size: 325
+      sha256: a7dfd0cab908c9ce72ddffd27358be141195fc801341e1c3fc943d2717985c04
+  original:
+    hackage: hspec-webdriver-1.2.0@sha256:eec2c4e435dc562f0d51ddf5d3aeea45aa703a03372b911b4cbeffa016d8a946,1713
 snapshots:
 - completed:
     size: 525663

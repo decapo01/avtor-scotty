@@ -53,7 +53,7 @@ routes config = do
   -- todo: remove this
   get "/unverified-users" $ do
     uvUsers <- liftIO $ fetchUvUsers config
-    html $ LTxt.pack $ show $ map (\x -> (unverifiedUserEmail x, unverifiedUserToken x)) uvUsers
+    html $ LTxt.pack $ show $ map (\x -> (unverifiedUserEmail x, show $ verificationToken $ unverifiedUserToken x)) uvUsers
   -- todo: remove this
   get "/users" $ do
     users <- liftIO $ fetchUsers config

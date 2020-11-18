@@ -62,4 +62,6 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - avtor-scotty
+    - req
+    - aeson
     - webdriver
