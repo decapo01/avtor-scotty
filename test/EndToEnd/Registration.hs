@@ -63,9 +63,9 @@ registrationFailTest = hspec $ do
         openPage $ baseUrl ++ "/signup"
 
         signUpFormElem <- findElem $ ById "signUpForm"
-        usernameElem <- findElem $ ByName "signUpForm.username"
-        passwordElem <- findElem $ ByName "signUpForm.passwordGroup.password"
-        confirmElem <- findElem $ ByName "signUpForm.passwordGroup.confirmPassword"
+        usernameElem   <- findElem $ ByName "signUpForm.username"
+        passwordElem   <- findElem $ ByName "signUpForm.passwordGroup.password"
+        confirmElem    <- findElem $ ByName "signUpForm.passwordGroup.confirmPassword"
 
         sendKeys "blah@blah.com" usernameElem
         sendKeys "" passwordElem

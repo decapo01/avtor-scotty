@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Repo.AccountRepo where
+module Repo.Sql.AccountRepo where
 
 import DbCommon (Updateable, toUpdateRow_)
 

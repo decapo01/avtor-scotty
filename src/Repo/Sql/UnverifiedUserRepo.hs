@@ -1,4 +1,4 @@
-module Repo.UnverifiedUserRepo where
+module Repo.Sql.UnverifiedUserRepo where
 
 import Avtor (VerificationToken, verificationToken, VerificationToken(..), UnverifiedUser, UserId(..), UnverifiedUser(..), VerToken(..), AccountId(..))
 

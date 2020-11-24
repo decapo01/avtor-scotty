@@ -33,6 +33,7 @@ dependencies:
 - hspec
 - blaze-html
 - blaze-builder
+- raw-strings-qq
 - scotty
 - wai
 - warp

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: dfee1eba53028d39b1d8741baa82e5cb2e769e6c681a5558cb8b5d10ddde4d47
+-- hash: f617f2972df7ce231b0063e6b429c30700a3e9931040f0daa9ce50ecbca29097
 
 name:           avtor-scotty
 version:        0.1.0.0
@@ -33,13 +33,16 @@ library
       Config
       DbCommon
       Lib
-      Repo.AccountRepo
       Repo.InMem.AccountRepo
       Repo.InMem.GenericRepo
       Repo.InMem.UnverifiedUserRepo
       Repo.InMem.UserRepo
-      Repo.UnverifiedUserRepo
-      Repo.UserRepo
+      Repo.Sql.AccountRepo
+      Repo.Sql.LoginAttemptRepo
+      Repo.Sql.Migrations.Migration01
+      Repo.Sql.Migrations.Migrations
+      Repo.Sql.UnverifiedUserRepo
+      Repo.Sql.UserRepo
       Routes.Routes
       Routes.SignUpRoutes
       Validators
@@ -61,6 +64,7 @@ library
     , hspec
     , mono-traversable
     , postgresql-simple
+    , raw-strings-qq
     , regex-compat
     , scotty
     , text
@@ -89,6 +93,7 @@ executable avtor-scotty-exe
     , hspec
     , mono-traversable
     , postgresql-simple
+    , raw-strings-qq
     , regex-compat
     , scotty
     , text
@@ -121,6 +126,7 @@ test-suite avtor-scotty-test
     , hspec
     , mono-traversable
     , postgresql-simple
+    , raw-strings-qq
     , regex-compat
     , req
     , scotty

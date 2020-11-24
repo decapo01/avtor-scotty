@@ -1,9 +1,9 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric  #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Repo.UserRepo where
+module Repo.Sql.UserRepo where
 
-import Repo.AccountRepo
+import Repo.Sql.AccountRepo
 
 import DbCommon as GenericRepo
 import DbCommon (Updateable, toUpdateRow_)

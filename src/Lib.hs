@@ -19,6 +19,8 @@ import qualified Routes.Routes as MyRoutes
 import qualified Routes.SignUpRoutes as SignUpRoutes
 import Data.IORef (newIORef)
 import Config
+import Repo.Sql.Migrations.Migrations (startMigration, applyMigrations)
+import Repo.Sql.Migrations.Migration01 (migration01)
 
 -- import Blah.Blah (foo, blah)
 
@@ -66,6 +68,9 @@ signUpState = SignUpRoutes.SignUpState [] []
 
 someFunc :: IO ()
 someFunc = do
+  pgConn <- pgConnection
+  _ <- startMigration pgConn
+  _ <- applyMigrations pgConn [migration01]
   initialState <- newIORef appState
   signUpRef    <- newIORef signUpState
   usersRef <- newIORef []
