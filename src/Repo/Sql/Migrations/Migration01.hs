@@ -27,6 +27,7 @@ create table if not exists unverified_users (
   id uuid unique primary key,
   username varchar(255) not null,
   password varchar(255) not null,
+  token uuid not null,
   account_id uuid references accounts(id)
 );
 

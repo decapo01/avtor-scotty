@@ -10,11 +10,11 @@ packages:
     git: https://github.com/decapo01/avtor-core-hs.git
     pantry-tree:
       size: 677
-      sha256: 63807ae2645b8c946ade3b5ff97e10196e6ed20ae196dc3ec27dfaab2d57fbb6
-    commit: e3ffa4699b49879ea026a8fd9b48c20189a71e63
+      sha256: 9a574ff8a66d9ef039f9ea669cfc330edc5c8f73297c591e00805bac78f43c74
+    commit: eca8bf294560073c3c1ef7899cc65989b01a8806
   original:
     git: https://github.com/decapo01/avtor-core-hs.git
-    commit: e3ffa4699b49879ea026a8fd9b48c20189a71e63
+    commit: eca8bf294560073c3c1ef7899cc65989b01a8806
 - completed:
     hackage: digestive-functors-0.8.4.2@sha256:badff1797b6dcd860a48ed4558985b2f6bec501e1016fa5afd9d7d6b0d8e4c08,3364
     pantry-tree:
@@ -43,6 +43,13 @@ packages:
       sha256: a7dfd0cab908c9ce72ddffd27358be141195fc801341e1c3fc943d2717985c04
   original:
     hackage: hspec-webdriver-1.2.0@sha256:eec2c4e435dc562f0d51ddf5d3aeea45aa703a03372b911b4cbeffa016d8a946,1713
+- completed:
+    hackage: scotty-cookie-0.1.0.3@sha256:3ff1df13a5acba8ba170a5ac22b3ac6a2c227791292536ce1ebfc41038f58fc9,1204
+    pantry-tree:
+      size: 222
+      sha256: 8236b9d3e3c01b29c3d7bf7791af8c87e87ea9b2052e9d7bc32038f524242679
+  original:
+    hackage: scotty-cookie-0.1.0.3@sha256:3ff1df13a5acba8ba170a5ac22b3ac6a2c227791292536ce1ebfc41038f58fc9,1204
 snapshots:
 - completed:
     size: 525663

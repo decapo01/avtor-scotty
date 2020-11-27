@@ -16,6 +16,7 @@ data SignUpForm = SignUpForm
   { username :: Text
   , password :: Text
   , confirmPassword :: Text
+  , accountId :: Text
   }
 
 data SignUpFormErrors = SignUpFormErrors
@@ -31,6 +32,7 @@ signUpFormView :: SignUpForm  -> SignUpFormErrors -> Markup
 signUpFormView signUpForm errors =
   div ! class_ "container" $ do
     form ! method "POST" ! id "signUpForm" $ do
+      input ! type_ "hidden" ! name "signUpForm.account_id" ! value (attrFromText $ accountId signUpForm)
       textInput "Username" "signUpForm.username" (attrFromText (username signUpForm)) "username-error" (usernameErrors errors)
       passwordInput "Password" "signUpForm.passwordGroup.password" (attrFromText (password signUpForm)) "password-error" (passwordErrors errors)
       passwordInput "Confirm Password" "signUpForm.passwordGroup.confirmPassword" (attrFromText (confirmPassword signUpForm)) "confirm-password-error" (confirmPasswordErrors errors)

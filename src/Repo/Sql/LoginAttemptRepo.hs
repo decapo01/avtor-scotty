@@ -10,10 +10,11 @@ import GHC.Generics (Generic)
 import Database.PostgreSQL.Simple.ToField (Action(Escape), toField, ToField)
 import Database.PostgreSQL.Simple.FromField (FromField, fromField)
 import Database.PostgreSQL.Simple.ToRow (toRow)
-import Database.PostgreSQL.Simple (Connection, ToRow)
+import Database.PostgreSQL.Simple (Only(..), query, Connection, ToRow)
 import Database.PostgreSQL.Simple.FromRow (FromRow, fromRow, field)
 
 import qualified DbCommon as GenRepo
+import Data.Text (Text)
 
 instance ToField LoginAttemptId where
   toField lid = Escape $ toASCIIBytes $ _loginAttemptId lid
@@ -44,3 +45,7 @@ loginAttemptsTable = GenRepo.Table "login_attempts"
 insert :: Connection -> LoginAttempt -> IO ()
 insert conn loginAttempt =
   GenRepo.insert conn "insert into login_attempts (id, address, created_on) values (?, ?, ?)" loginAttempt
+
+findAllByIpAddress :: Connection -> Text -> IO ([LoginAttempt])
+findAllByIpAddress conn ip = do
+  query conn "select * from login_attempts where ip = ?" (Only ip)

@@ -35,7 +35,8 @@ data LoginForm
 
 data LoginErrors
   = LoginErrors
-  { usernameErrors :: [Text]
+  { globalErrors   :: [Text] 
+  , usernameErrors :: [Text]
   , passwordErrors :: [Text]
   }
 
@@ -43,6 +44,15 @@ data LoginErrors
 loginView :: LoginForm -> LoginErrors -> Markup
 loginView loginForm loginErrors =
   div ! class_ "container" $ do
+    if (length $ globalErrors loginErrors) /= 0
+      then do
+        div ! class_ "row" $ do
+          div ! class_ "col-lg-12" $ do
+            div ! class_ "alert alert-danger" $ do
+              ul $ do
+                forM_ (globalErrors loginErrors) $ \e ->
+                  li $ text e
+      else text ""
     div ! class_ "row" $ do
       div ! class_ "col-lg-12" $ do
         loginComponent loginForm loginErrors

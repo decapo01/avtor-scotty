@@ -19,8 +19,8 @@ loginForm  = LoginForm "" ""
 
 validateLogin :: Monad m => Form [Text] m LoginForm
 validateLogin = LoginForm
-  <$> "username" .: validate validateEmail (text Nothing)
-  <*> "password" .: validate validatePassword (text Nothing)
+  <$> "username" .: (text Nothing)
+  <*> "password" .: (text Nothing)
 
 
 checkEmail = isJust . find (== '@')

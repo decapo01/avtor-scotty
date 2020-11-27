@@ -18,7 +18,7 @@ import Common.Commons (idxOr)
 import Text.Digestive (Result)
 import Text.Digestive.Types (Result(Success))
 import Text.Digestive (Result(Error))
-import Avtor (userEmail, unverifiedUserToken, VerificationToken, verifyUser, unverifiedUserEmail, AvtorError(..), User, signUp, UserId, UnverifiedUser, AvtorError, signUpDtoPassword, signUpDtoEmail, SignUpDto(..), VerificationToken(..))
+import Avtor (AccountId, userEmail, unverifiedUserToken, VerificationToken, verifyUser, unverifiedUserEmail, AvtorError(..), User, signUp, UserId, UnverifiedUser, AvtorError, signUpDtoPassword, signUpDtoEmail, SignUpDto(..), VerificationToken(..), _accountId)
 import Data.UUID.V4 (nextRandom)
 
 import qualified Repo.InMem.UserRepo as UserRepo
@@ -30,8 +30,12 @@ import qualified Data.Text as Txt
 import qualified Data.UUID as Uuid
 import qualified Data.List as List
 
+import qualified Repo.Sql.UserRepo as UserSqlRepo
+import qualified Repo.Sql.UnverifiedUserRepo as UnverifiedUserSqlRepo
+
 import Data.UUID (UUID)
 import Config (Config(..))
+import Database.PostgreSQL.Simple (Connection)
 
 data SignUpState = SignUpState
   { unverifiedUsers :: [UnverifiedUser]
@@ -46,25 +50,24 @@ data SignUpState = SignUpState
 
 routes :: (ScottyError e, MonadIO m) => Config -> ScottyT e m ()
 routes config = do
-  get "/blah" $ do
-    html $ "blah"
   get "/signup" $ do
-    html $ renderHtml $ layout "Sign Up" [bootstrap3Link] [] (signUpFormView (SignUpForm "" "" "") defaultSignUpFormErrors)
-  -- todo: remove this
-  get "/unverified-users" $ do
-    uvUsers <- liftIO $ fetchUvUsers config
-    html $ LTxt.pack $ show $ map (\x -> (unverifiedUserEmail x, show $ verificationToken $ unverifiedUserToken x)) uvUsers
-  -- todo: remove this
-  get "/users" $ do
-    users <- liftIO $ fetchUsers config
-    html $ LTxt.pack $ show $ map (\x -> userEmail x) users
+    html $ renderHtml $ layout "Sign Up" [bootstrap3Link] [] (signUpFormView (SignUpForm "" "" "" (textFromAccountId $ defaultAccountId config)) defaultSignUpFormErrors)
   post "/signup" $ do
     (view, result) <- runForm "signUpForm" validateSignUp
     case result of
       Just signUpForm -> do
+        liftIO $ print $ password signUpForm
         unverifiedUsersRef <- liftIO $ fetchUvUsers config
         -- todo: change this to take only one nextRandom
-        signUpRes <- liftIO $ signUp createSignUpDto (findByUsername config) hashPassword  genUuid  genUuid  genUuid  (insertUvUser config) sendEmail removeEmailIfSendFails
+        signUpRes <- liftIO $ signUp createSignUpDto 
+                                     (UserSqlRepo.findByUsername $ connection config) 
+                                     hashPassword  
+                                     genUuid  
+                                     genUuid  
+                                     genUuid  
+                                     (UnverifiedUserSqlRepo.insert $ connection config) 
+                                     sendEmail 
+                                     (UnverifiedUserSqlRepo.remove $ connection config)
         case signUpRes of
           Right _ -> redirect "/"
           Left err ->
@@ -77,7 +80,7 @@ routes config = do
             { signUpDtoEmail = username signUpForm
             , signUpDtoPassword = password signUpForm
             , signUpDtoConfirmPassword = confirmPassword signUpForm
-            , signUpDtoAccountId = Nothing
+            , signUpDtoAccountId = Uuid.fromText $ accountId signUpForm
             }
           userExistsErrors = defaultSignUpFormErrors { global = "User Exists" }
       Nothing -> html $ renderHtml $ layout "Sign Up" [bootstrap3Link] [] (signUpFormView (signUpFormFromView view) $ errorsFromView view)
@@ -87,13 +90,19 @@ routes config = do
     case tokenUuidMay of
       Nothing -> html "We had a problem processing your request"
       Just tokenUuid -> do
-        res <- liftIO $ 
-          verifyUser 
-            (VerificationToken tokenUuid) 
-            (findByToken config)
-            (insertUser config)
-        redirect "/"
+        verificationRes <- liftIO $ verifyUser (VerificationToken tokenUuid) (UnverifiedUserSqlRepo.findByToken (connection config)) (insertUserToDb (connection config))
+        case verificationRes of
+          Left e -> do
+            liftIO $ putStrLn "user not found" 
+            redirect "/"
+          Right _ ->
+            redirect "/"
 
+
+insertUserToDb :: Connection -> User -> IO (Either AvtorError ())
+insertUserToDb conn user = do
+  _ <- UserSqlRepo.insert conn user
+  return $ Right ()
 
 fetchUvUsers :: Config -> IO [UnverifiedUser]
 fetchUvUsers config =
@@ -128,6 +137,7 @@ insertUvUser c@InMemConfig{} uvUser = do
 
 insertUvUser _ uvUser = return  $ Right ()
 
+-- todo: implement this
 hashPassword :: Text -> IO (Either AvtorError Text)
 hashPassword pass = do
   return $ Right pass
@@ -135,8 +145,9 @@ hashPassword pass = do
 validateSignUp :: Monad m => Form [Text] m SignUpForm
 validateSignUp = SignUpForm
   <$> "username" .: validate validateEmail (Form.text Nothing)
-  <*> "password" .: (Form.text Nothing)
+  <*> "passwordGroup.password" .: (Form.text Nothing)
   <*> "passwordGroup" .: vpass
+  <*> "account_id" .: (Form.text Nothing)
   where
     vpass :: Monad m => Form [Text] m Text
     vpass = 
@@ -162,6 +173,7 @@ signUpFormFromView view =
     (fieldInputText "username" view)
     (fieldInputText "passwordGroup.password" view)
     (fieldInputText "passwordGroup.confirmPassword" view)
+    (fieldInputText "account_id" view)
 
 validateConfirmPassword :: Text -> Text -> Result Text Text
 validateConfirmPassword confirmPassword password =
@@ -178,7 +190,6 @@ insertUnverifiedUser ref user = do
 -- todo: really implement these two functions
 sendEmail :: Text -> IO (Either AvtorError ())
 sendEmail emailBody = do
-  putStrLn $ Txt.unpack emailBody
   return $ Right  ()
 
 removeEmailIfSendFails :: UserId -> IO (Either AvtorError ())
@@ -194,3 +205,6 @@ insertUser c@InMemConfig{} user = do
   return $ Right ()
 
 insertUser _ user = return $ Right ()
+
+textFromAccountId :: AccountId -> Text
+textFromAccountId aid = Uuid.toText $ _accountId aid

@@ -21,6 +21,10 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
+- aeson
+- bytestring
+- utf8-string
+- cookie
 - digestive-functors
 - digestive-functors-scotty
 - digestive-functors-blaze
@@ -31,10 +35,12 @@ dependencies:
 - postgresql-simple
 - uuid
 - hspec
+- jose-jwt
 - blaze-html
 - blaze-builder
 - raw-strings-qq
 - scotty
+- scotty-cookie
 - wai
 - warp
 - regex-compat
